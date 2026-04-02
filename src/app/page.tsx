@@ -431,6 +431,35 @@ export default function HomePage() {
                           <p className="text-xs text-slate-500 line-clamp-1 mt-1">
                             {product.description?.slice(0, 50)}...
                           </p>
+                          {/* Star Rating */}
+                          <div className="mt-1.5 flex items-center gap-1">
+                            {(product.totalReviews ?? 0) > 0 ? (
+                              <>
+                                <div className="flex items-center">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                      key={star}
+                                      className={`text-sm leading-none ${
+                                        star <= Math.round(product.averageRating ?? 0)
+                                          ? "text-yellow-400"
+                                          : "text-slate-300"
+                                      }`}
+                                    >
+                                      ★
+                                    </span>
+                                  ))}
+                                </div>
+                                <span className="text-xs font-semibold text-slate-700">
+                                  {(product.averageRating ?? 0).toFixed(1)}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  ({product.totalReviews})
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic">No reviews yet</span>
+                            )}
+                          </div>
                         </div>
 
                         <div className="flex justify-between items-center">
