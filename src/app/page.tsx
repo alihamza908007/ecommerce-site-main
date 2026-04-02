@@ -58,7 +58,7 @@ export default function HomePage() {
     } else {
       carouselIntervalRef.current = setInterval(() => {
         setCarouselIndex((prev) => (prev + 1) % bannerSlides.length);
-      }, 2000);
+      }, 5000);
     }
 
     return () => {
@@ -314,45 +314,44 @@ export default function HomePage() {
 
                 {/* Auto-advance Indicator */}
                 <div className="text-center mt-4 text-white/70 text-sm">
-                  {isHovering ? "Paused" : `Next in 2s`}
+                  {isHovering ? "Paused" : `Next in 5s`}
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {currentUser && (
-          <section className="py-20 px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
-              <div className="text-center mb-16">
-                <h3 className="text-4xl font-bold text-slate-900 mb-4">
-                  Featured{" "}
-                  <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
-                    Products
-                  </span>
-                </h3>
-                <p className="text-lg text-slate-600">
-                  Check out our latest and most popular items
-                </p>
-              </div>
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="text-center mb-16">
+              <h3 className="text-4xl font-bold text-slate-900 mb-4">
+                Featured{" "}
+                <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
+                  Products
+                </span>
+              </h3>
+              <p className="text-lg text-slate-600">
+                Check out our latest and most popular items
+              </p>
+            </div>
 
-              {isLoadingProducts ? (
-                <div className="flex justify-center items-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600"></div>
-                </div>
-              ) : products.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {products.map((product, index) => (
-                    <div
-                      key={product.id}
-                      className="group relative h-96 cursor-pointer"
-                      onClick={() => router.push(`/products/${product.id}`)}
-                      style={{
-                        perspective: "1000px",
-                        animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
-                      }}
-                    >
-                      <style>{`
+            {isLoadingProducts ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600"></div>
+              </div>
+            ) : products.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="group relative h-96 cursor-pointer"
+                    onClick={() => router.push(`/products/${product.id}`)}
+                    style={{
+                      perspective: "1000px",
+                      animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
+                    }}
+                  >
+                    <style>{`
                         @keyframes fadeInUp {
                           from {
                             opacity: 0;
@@ -393,83 +392,82 @@ export default function HomePage() {
                         }
                       `}</style>
 
-                      <div className="product-card-3d relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-violet-200 shadow-lg">
-                        {/* Image Container */}
-                        <div className="relative h-2/3 w-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
-                          {product.image ? (
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              className="product-image h-full w-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.src =
-                                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e2e8f0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='48' fill='%23999' text-anchor='middle' dy='.3em'%3E📦%3C/text%3E%3C/svg%3E";
-                              }}
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-full text-4xl">
-                              📦
-                            </div>
-                          )}
-
-                          {/* Hover Overlay */}
-                          <div className="product-overlay absolute inset-0 bg-black/40 opacity-0 flex items-center justify-center">
-                            <div className="text-center text-white">
-                              <p className="text-sm font-semibold mb-2">
-                                Click to view
-                              </p>
-                              <p className="text-xs opacity-90">details</p>
-                            </div>
+                    <div className="product-card-3d relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-violet-200 shadow-lg">
+                      {/* Image Container */}
+                      <div className="relative h-2/3 w-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="product-image h-full w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e2e8f0' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='48' fill='%23999' text-anchor='middle' dy='.3em'%3E📦%3C/text%3E%3C/svg%3E";
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-4xl">
+                            📦
                           </div>
-                        </div>
+                        )}
 
-                        {/* Content Container */}
-                        <div className="relative p-4 h-1/3 flex flex-col justify-between">
-                          <div>
-                            <h4 className="font-semibold text-slate-900 line-clamp-2 group-hover:text-violet-600 transition-colors">
-                              {product.name}
-                            </h4>
-                            <p className="text-xs text-slate-500 line-clamp-1 mt-1">
-                              {product.description?.slice(0, 50)}...
+                        {/* Hover Overlay */}
+                        <div className="product-overlay absolute inset-0 bg-black/40 opacity-0 flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <p className="text-sm font-semibold mb-2">
+                              Click to view
                             </p>
-                          </div>
-
-                          <div className="flex justify-between items-center">
-                            <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                              ${product.price.toFixed(2)}
-                            </span>
-                            <span
-                              className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                product.stock > 0
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {product.stock > 0 ? "In Stock" : "Out"}
-                            </span>
+                            <p className="text-xs opacity-90">details</p>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-slate-600">
-                  No products available
-                </div>
-              )}
 
-              <div className="mt-12 text-center">
-                <button
-                  onClick={() => router.push("/products")}
-                  className="rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 px-8 py-3 font-semibold text-white hover:shadow-lg hover:scale-105 transition-all inline-block"
-                >
-                  View All Products →
-                </button>
+                      {/* Content Container */}
+                      <div className="relative p-4 h-1/3 flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-semibold text-slate-900 line-clamp-2 group-hover:text-violet-600 transition-colors">
+                            {product.name}
+                          </h4>
+                          <p className="text-xs text-slate-500 line-clamp-1 mt-1">
+                            {product.description?.slice(0, 50)}...
+                          </p>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
+                            ${product.price.toFixed(2)}
+                          </span>
+                          <span
+                            className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                              product.stock > 0
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {product.stock > 0 ? "In Stock" : "Out"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+            ) : (
+              <div className="text-center py-12 text-slate-600">
+                No products available
+              </div>
+            )}
+
+            <div className="mt-12 text-center">
+              <button
+                onClick={() => router.push("/products")}
+                className="rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 px-8 py-3 font-semibold text-white hover:shadow-lg hover:scale-105 transition-all inline-block"
+              >
+                View All Products →
+              </button>
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
         {/* Features Section */}
         <section className="bg-gradient-to-r from-violet-50 to-purple-50 py-16 border-t border-violet-200">

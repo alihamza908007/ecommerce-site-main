@@ -14,13 +14,8 @@ export default function ProductsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const { user } = getCurrentUser();
-    if (!user) {
-      router.push("/auth/login");
-    } else {
-      fetchProducts();
-    }
-  }, [router]);
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
