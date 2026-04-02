@@ -7,6 +7,7 @@ import { useCart } from "@/context/cart-context";
 import { Product } from "@/types";
 import { getCurrentUser } from "@/lib/auth";
 import Link from "next/link";
+import { Header, Footer } from "@/components/layout";
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -86,33 +87,8 @@ export default function ProductDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/products"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              ← Back to Products
-            </Link>
-            <h1 className="text-3xl font-bold text-slate-900">
-              {product.name}
-            </h1>
-          </div>
-
-          <Link
-            href="/cart"
-            className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-          >
-            Cart ({totalItems})
-          </Link>
-        </div>
-      </header>
-
-      {/* Main */}
+    <>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow">
@@ -180,9 +156,9 @@ export default function ProductDetailPage() {
                 <button
                   onClick={() => handleAddToCart(product)}
                   disabled={product.stock <= 0}
-                  className={`flex-1 py-3 px-6 rounded-md font-medium text-white ${
+                  className={`flex-1 py-3 px-6 rounded-lg font-semibold text-white transition-all ${
                     product.stock > 0
-                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      ? "bg-gradient-to-r from-violet-600 to-cyan-500 hover:shadow-lg hover:scale-105"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                 >
@@ -191,7 +167,7 @@ export default function ProductDetailPage() {
 
                 <Link
                   href="/products"
-                  className="px-6 py-3 border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50"
+                  className="px-6 py-3 border-2 border-violet-600 rounded-lg font-semibold text-violet-600 hover:bg-violet-50 transition-colors"
                 >
                   Back
                 </Link>
@@ -200,6 +176,8 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </main>
-    </div>
+
+      <Footer />
+    </>
   );
 }
