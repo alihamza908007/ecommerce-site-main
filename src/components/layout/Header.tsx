@@ -2,29 +2,95 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getCurrentUser, logout } from "@/lib/auth";
 import { useCart } from "@/context/cart-context";
 
 export const Header: React.FC = () => {
   const router = useRouter();
-  const { totalItems } = useCart();
+  const {
+    totalItems,
+    items,
+    updateQuantity,
+    removeItem,
+    totalAmount,
+    clearCart,
+  } = useCart();
   const [currentUser, setCurrentUser] = useState<{
     name: string;
     role: string;
+    id: string;
+    email: string;
   } | null>(null);
+  const [isCartDropdownOpen, setIsCartDropdownOpen] = useState(false);
+  const [isCheckingOutFromDropdown, setIsCheckingOutFromDropdown] =
+    useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const { user } = getCurrentUser();
     if (user) {
-      setCurrentUser({ name: user.name, role: user.role });
+      setCurrentUser({
+        name: user.name,
+        role: user.role,
+        id: user.id,
+        email: user.email,
+      });
     }
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsCartDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = async () => {
     await logout();
     setCurrentUser(null);
     router.refresh();
+  };
+
+  const handleQuickCheckout = async () => {
+    if (!currentUser || items.length === 0) return;
+
+    try {
+      setIsCheckingOutFromDropdown(true);
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: currentUser.name,
+          email: currentUser.email,
+          userId: currentUser.id,
+          items,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Checkout failed");
+      }
+
+      clearCart();
+      setIsCartDropdownOpen(false);
+      router.push("/cart");
+      router.refresh();
+    } catch (error) {
+      console.error("Checkout failed:", error);
+    } finally {
+      setIsCheckingOutFromDropdown(false);
+    }
   };
 
   return (
@@ -56,17 +122,129 @@ export const Header: React.FC = () => {
               >
                 Products
               </Link>
-              <Link
-                href="/cart"
-                className="relative text-sm font-medium text-slate-600 hover:text-violet-600 transition-colors duration-200"
-              >
-                Cart
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-xs font-bold text-white shadow-md">
-                    {totalItems}
-                  </span>
+
+              {/* Cart Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsCartDropdownOpen(!isCartDropdownOpen)}
+                  className="relative text-sm font-medium text-slate-600 hover:text-violet-600 transition-colors duration-200 flex items-center gap-2"
+                >
+                  Cart
+                  {totalItems > 0 && (
+                    <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-xs font-bold text-white shadow-md">
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+
+                {/* Dropdown Menu */}
+                {isCartDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-96 rounded-xl border border-violet-200 bg-white shadow-xl z-50">
+                    <div className="max-h-96 overflow-y-auto">
+                      {items.length === 0 ? (
+                        <div className="p-6 text-center">
+                          <p className="text-slate-600">Your cart is empty</p>
+                        </div>
+                      ) : (
+                        <div className="divide-y divide-slate-200">
+                          {items.map((item) => (
+                            <div
+                              key={item.id}
+                              className="p-4 hover:bg-slate-50 transition-colors"
+                            >
+                              <div className="flex gap-3 mb-2">
+                                {item.image && (
+                                  <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="h-12 w-12 rounded-lg object-cover"
+                                  />
+                                )}
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-slate-900 text-sm">
+                                    {item.name}
+                                  </h3>
+                                  <p className="text-xs text-slate-600">
+                                    ${item.price.toFixed(2)} each
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between mt-3">
+                                <div className="flex items-center gap-2 border border-slate-300 rounded-lg">
+                                  <button
+                                    onClick={() =>
+                                      updateQuantity(item.id, item.quantity - 1)
+                                    }
+                                    className="px-2 py-1 hover:bg-slate-100 transition-colors"
+                                  >
+                                    −
+                                  </button>
+                                  <span className="px-2 text-sm font-medium">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      updateQuantity(item.id, item.quantity + 1)
+                                    }
+                                    className="px-2 py-1 hover:bg-slate-100 transition-colors"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-slate-900 text-sm">
+                                    ${(item.price * item.quantity).toFixed(2)}
+                                  </p>
+                                  <button
+                                    onClick={() => removeItem(item.id)}
+                                    className="text-xs text-red-500 hover:text-red-700 transition-colors font-medium"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {items.length > 0 && (
+                      <div className="border-t border-slate-200 p-4 space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-slate-900">
+                            Total:
+                          </span>
+                          <span className="font-bold text-lg text-violet-600">
+                            ${totalAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setIsCartDropdownOpen(false);
+                              router.push("/cart");
+                            }}
+                            className="flex-1 py-2 px-3 rounded-lg border border-violet-600 text-violet-600 text-sm font-medium hover:bg-violet-50 transition-colors"
+                          >
+                            View Cart
+                          </button>
+                          <button
+                            onClick={handleQuickCheckout}
+                            disabled={isCheckingOutFromDropdown}
+                            className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-medium hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                          >
+                            {isCheckingOutFromDropdown
+                              ? "Processing..."
+                              : "Checkout"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
-              </Link>
+              </div>
               <div className="flex items-center gap-3">
                 <span className="text-sm text-slate-600">
                   Hi{" "}

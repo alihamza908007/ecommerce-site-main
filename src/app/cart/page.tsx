@@ -128,7 +128,8 @@ export default function CartPage() {
                 {items.map((item) => (
                   <li
                     key={item.id}
-                    className="flex p-5 transition-colors hover:bg-white/5"
+                    className="flex p-5 transition-colors hover:bg-white/5 cursor-pointer"
+                    onClick={() => router.push(`/products/${item.id}`)}
                   >
                     <div className="h-24 w-24 rounded-xl bg-gradient-to-br from-indigo-400/20 to-cyan-400/20 overflow-hidden flex items-center justify-center flex-shrink-0">
                       {item.image ? (
