@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/cart-context";
+import { Header, Footer } from "@/components/layout";
+import { LoadingSpinner } from "@/components/common";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
@@ -71,44 +73,50 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-indigo-500" />
-          <p className="mt-4 text-[var(--text-secondary)]">
-            Checking authentication...
-          </p>
-        </div>
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <LoadingSpinner size="lg" text="Loading your cart..." />
+        </main>
+        <Footer />
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen">
-        <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] p-10 text-center shadow-xl">
-            <h1 className="text-3xl font-bold">Your cart is empty</h1>
-            <p className="mt-2 text-[var(--text-secondary)]">
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header />
+        <main className="flex-1 mx-auto max-w-7xl w-full px-4 py-12 sm:px-6 lg:px-8">
+          <div className="rounded-xl border border-violet-200 bg-gradient-to-r from-violet-50 to-purple-50 p-10 text-center shadow-lg">
+            <h1 className="text-3xl font-bold text-slate-900">
+              Your cart is empty
+            </h1>
+            <p className="mt-2 text-slate-600">
               Add products to place an order.
             </p>
             <Link
               href="/products"
-              className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-2.5 font-medium text-white transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-500"
+              className="mt-6 inline-flex rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 px-6 py-2.5 font-semibold text-white hover:shadow-lg hover:scale-105 transition-all duration-300"
             >
               Continue Shopping
             </Link>
           </div>
         </main>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="mb-6 text-3xl font-bold">Shopping Cart</h1>
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-1 mx-auto max-w-7xl w-full px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="mb-6 text-4xl font-bold text-slate-900">
+          Shopping Cart
+        </h1>
         {checkoutMessage && (
-          <div className="mb-5 rounded-xl border border-indigo-400/30 bg-indigo-500/10 px-4 py-3 text-sm">
+          <div className="mb-5 rounded-xl border border-violet-400/30 bg-violet-500/10 px-4 py-3 text-sm font-medium">
             {checkoutMessage}
           </div>
         )}
@@ -199,7 +207,7 @@ export default function CartPage() {
               <button
                 onClick={handleCheckout}
                 disabled={isCheckingOut}
-                className="mt-6 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 w-full rounded-lg bg-gradient-to-r from-violet-600 to-cyan-500 px-4 py-3 font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isCheckingOut ? "Placing Order..." : "Checkout"}
               </button>
@@ -207,6 +215,7 @@ export default function CartPage() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
